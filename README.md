@@ -2,7 +2,7 @@
 
 A classic Minesweeper game clone featuring a nostalgic Windows 98 user interface.
 
-![Game Screenshot](/Users/hui.he/.gemini/antigravity/brain/ae506867-b43a-4732-84cf-f8f42a836a1b/minesweeper_reset_1763693774951.png)
+https://hex-coding.github.io/minesweeper/
 
 ## How to Play
 1.  Open `index.html` in your web browser.
