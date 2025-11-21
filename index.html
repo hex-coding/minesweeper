@@ -26,6 +26,10 @@
                         <div class="dropdown-item" data-difficulty="beginner">Beginner</div>
                         <div class="dropdown-item" data-difficulty="intermediate">Intermediate</div>
                         <div class="dropdown-item" data-difficulty="expert">Expert</div>
+                        <div class="separator"></div>
+                        <div class="dropdown-item" id="best-times-item">Best Times...</div>
+                        <div class="separator"></div>
+                        <div class="dropdown-item" id="sound-toggle">Sound: On</div>
                     </div>
                 </div>
                 <div class="menu-item">
@@ -40,6 +44,37 @@
                 </div>
                 <div class="grid" id="grid">
                     <!-- Cells will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Best Times Modal -->
+    <div id="best-times-modal" class="modal">
+        <div class="window modal-window">
+            <div class="title-bar">
+                <div class="title-bar-text">Fastest Mine Sweepers</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Close" id="close-best-times"></button>
+                </div>
+            </div>
+            <div class="window-body">
+                <div class="best-times-grid">
+                    <div>Beginner:</div>
+                    <div id="best-beginner-time">999</div>
+                    <div id="best-beginner-name">Anonymous</div>
+
+                    <div>Intermediate:</div>
+                    <div id="best-intermediate-time">999</div>
+                    <div id="best-intermediate-name">Anonymous</div>
+
+                    <div>Expert:</div>
+                    <div id="best-expert-time">999</div>
+                    <div id="best-expert-name">Anonymous</div>
+                </div>
+                <div class="modal-buttons">
+                    <button id="reset-scores-btn">Reset Scores</button>
+                    <button id="ok-best-times-btn">OK</button>
                 </div>
             </div>
         </div>

@@ -110,8 +110,10 @@ function handleLeftClick(e) {
         cell.element.style.backgroundColor = 'red';
         resetBtn.innerText = '😵';
         clearInterval(timerInterval);
+        SoundManager.playExplode();
     } else {
         revealCell(index);
+        SoundManager.playClick();
         checkWin();
     }
 }
@@ -135,6 +137,7 @@ function handleRightClick(e) {
             cell.element.innerText = '🚩';
             cell.element.classList.add('flagged');
             flags++;
+            SoundManager.playFlag();
         }
     }
     mineCounter.innerText = formatNumber(MINES - flags);
@@ -193,6 +196,8 @@ function checkWin() {
             }
         });
         mineCounter.innerText = '000';
+        HighScoreManager.checkScore(currentDifficulty, timer);
+        SoundManager.playWin();
     }
 }
 
@@ -211,10 +216,167 @@ function formatNumber(num) {
 resetBtn.addEventListener('click', initGame);
 
 
+// High Score Manager
+const HighScoreManager = {
+    scores: {
+        beginner: { time: 999, name: 'Anonymous' },
+        intermediate: { time: 999, name: 'Anonymous' },
+        expert: { time: 999, name: 'Anonymous' }
+    },
+
+    init() {
+        const savedScores = localStorage.getItem('minesweeperScores');
+        if (savedScores) {
+            this.scores = JSON.parse(savedScores);
+        }
+        this.updateUI();
+    },
+
+    checkScore(difficulty, time) {
+        if (time < this.scores[difficulty].time) {
+            const name = prompt(`New High Score for ${difficulty}! Enter your name:`, 'Anonymous');
+            this.scores[difficulty] = {
+                time: time,
+                name: name || 'Anonymous'
+            };
+            this.save();
+            this.updateUI();
+            this.showModal();
+        }
+    },
+
+    save() {
+        localStorage.setItem('minesweeperScores', JSON.stringify(this.scores));
+    },
+
+    reset() {
+        this.scores = {
+            beginner: { time: 999, name: 'Anonymous' },
+            intermediate: { time: 999, name: 'Anonymous' },
+            expert: { time: 999, name: 'Anonymous' }
+        };
+        this.save();
+        this.updateUI();
+    },
+
+    updateUI() {
+        document.getElementById('best-beginner-time').innerText = this.scores.beginner.time;
+        document.getElementById('best-beginner-name').innerText = this.scores.beginner.name;
+        document.getElementById('best-intermediate-time').innerText = this.scores.intermediate.time;
+        document.getElementById('best-intermediate-name').innerText = this.scores.intermediate.name;
+        document.getElementById('best-expert-time').innerText = this.scores.expert.time;
+        document.getElementById('best-expert-name').innerText = this.scores.expert.name;
+    },
+
+    showModal() {
+        document.getElementById('best-times-modal').classList.add('show');
+    },
+
+    hideModal() {
+        document.getElementById('best-times-modal').classList.remove('show');
+    }
+};
+
+// Sound Manager
+const SoundManager = {
+    audioCtx: null,
+    enabled: true,
+
+    init() {
+        try {
+            const AudioContext = window.AudioContext || window.webkitAudioContext;
+            this.audioCtx = new AudioContext();
+        } catch (e) {
+            console.warn('Web Audio API not supported');
+            this.enabled = false;
+        }
+        this.updateUI();
+    },
+
+    toggle() {
+        this.enabled = !this.enabled;
+        this.updateUI();
+    },
+
+    updateUI() {
+        const toggle = document.getElementById('sound-toggle');
+        toggle.innerText = `Sound: ${this.enabled ? 'On' : 'Off'}`;
+    },
+
+    playTone(freq, type, duration, vol = 0.1) {
+        if (!this.enabled || !this.audioCtx) return;
+
+        // Resume context if suspended (browser policy)
+        if (this.audioCtx.state === 'suspended') {
+            this.audioCtx.resume();
+        }
+
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, this.audioCtx.currentTime);
+
+        gain.gain.setValueAtTime(vol, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + duration);
+
+        osc.connect(gain);
+        gain.connect(this.audioCtx.destination);
+
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + duration);
+    },
+
+    playClick() {
+        this.playTone(800, 'square', 0.05, 0.05);
+    },
+
+    playFlag() {
+        this.playTone(400, 'triangle', 0.1, 0.1);
+    },
+
+    playExplode() {
+        if (!this.enabled || !this.audioCtx) return;
+        if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+
+        const bufferSize = this.audioCtx.sampleRate * 0.5; // 0.5 seconds
+        const buffer = this.audioCtx.createBuffer(1, bufferSize, this.audioCtx.sampleRate);
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < bufferSize; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = this.audioCtx.createBufferSource();
+        noise.buffer = buffer;
+
+        const gain = this.audioCtx.createGain();
+        gain.gain.setValueAtTime(0.5, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.5);
+
+        noise.connect(gain);
+        gain.connect(this.audioCtx.destination);
+        noise.start();
+    },
+
+    playWin() {
+        if (!this.enabled) return;
+        const now = this.audioCtx.currentTime;
+        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
+            setTimeout(() => this.playTone(freq, 'square', 0.2, 0.1), i * 150);
+        });
+    }
+};
+
 // Menu Logic
 const gameMenuTrigger = document.getElementById('game-menu-trigger');
 const gameMenuDropdown = document.getElementById('game-menu-dropdown');
-const difficultyItems = document.querySelectorAll('.dropdown-item');
+const difficultyItems = document.querySelectorAll('.dropdown-item[data-difficulty]');
+const bestTimesItem = document.getElementById('best-times-item');
+const soundToggle = document.getElementById('sound-toggle');
+const closeBestTimesBtn = document.getElementById('close-best-times');
+const okBestTimesBtn = document.getElementById('ok-best-times-btn');
+const resetScoresBtn = document.getElementById('reset-scores-btn');
 
 gameMenuTrigger.addEventListener('click', (e) => {
     e.stopPropagation();
@@ -232,7 +394,31 @@ difficultyItems.forEach(item => {
     });
 });
 
+bestTimesItem.addEventListener('click', () => {
+    HighScoreManager.showModal();
+});
+
+soundToggle.addEventListener('click', (e) => {
+    e.stopPropagation(); // Keep menu open
+    SoundManager.toggle();
+});
+
+closeBestTimesBtn.addEventListener('click', () => {
+    HighScoreManager.hideModal();
+});
+
+okBestTimesBtn.addEventListener('click', () => {
+    HighScoreManager.hideModal();
+});
+
+resetScoresBtn.addEventListener('click', () => {
+    if (confirm('Are you sure you want to reset all high scores?')) {
+        HighScoreManager.reset();
+    }
+});
+
 function setDifficulty(difficulty) {
+    currentDifficulty = difficulty;
     switch (difficulty) {
         case 'beginner':
             ROWS = 9;
@@ -257,4 +443,7 @@ function setDifficulty(difficulty) {
     initGame();
 }
 
+let currentDifficulty = 'beginner';
+HighScoreManager.init();
+SoundManager.init();
 initGame();
