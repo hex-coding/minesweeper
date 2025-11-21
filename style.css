@@ -1,0 +1,244 @@
+:root {
+    --bg-color: #c0c0c0;
+    --shadow-dark: #808080;
+    --shadow-light: #ffffff;
+    --blue-title: #000080;
+}
+
+body {
+    background-color: #008080;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    user-select: none;
+}
+
+.window {
+    background-color: var(--bg-color);
+    border-top: 2px solid var(--shadow-light);
+    border-left: 2px solid var(--shadow-light);
+    border-right: 2px solid var(--shadow-dark);
+    border-bottom: 2px solid var(--shadow-dark);
+    padding: 2px;
+    box-shadow: 1px 1px 0 0 #000;
+    width: fit-content;
+}
+
+.title-bar {
+    background: linear-gradient(90deg, var(--blue-title), #1084d0);
+    color: white;
+    padding: 3px 2px 3px 3px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.title-bar-controls button {
+    width: 16px;
+    height: 14px;
+    background-color: var(--bg-color);
+    border-top: 1px solid var(--shadow-light);
+    border-left: 1px solid var(--shadow-light);
+    border-right: 1px solid var(--shadow-dark);
+    border-bottom: 1px solid var(--shadow-dark);
+    margin-left: 2px;
+    padding: 0;
+    font-size: 8px;
+    line-height: 10px;
+}
+
+.window-body {
+    padding: 6px;
+}
+
+.menu-bar {
+    margin-bottom: 8px;
+    font-size: 12px;
+    display: flex;
+}
+
+.menu-item {
+    position: relative;
+    margin-right: 10px;
+}
+
+.menu-item span {
+    cursor: pointer;
+    padding: 2px 5px;
+}
+
+.menu-item span:hover {
+    background-color: #000080;
+    color: white;
+}
+
+.menu-item span:first-letter {
+    text-decoration: underline;
+}
+
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: var(--bg-color);
+    border-top: 2px solid var(--shadow-light);
+    border-left: 2px solid var(--shadow-light);
+    border-right: 2px solid var(--shadow-dark);
+    border-bottom: 2px solid var(--shadow-dark);
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+    min-width: 100px;
+}
+
+.dropdown.show {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 3px 10px;
+    cursor: pointer;
+}
+
+.dropdown-item:hover {
+    background-color: #000080;
+    color: white;
+}
+
+.game-container {
+    border-top: 2px solid var(--shadow-dark);
+    border-left: 2px solid var(--shadow-dark);
+    border-right: 2px solid var(--shadow-light);
+    border-bottom: 2px solid var(--shadow-light);
+    padding: 6px;
+}
+
+.header {
+    border-top: 2px solid var(--shadow-dark);
+    border-left: 2px solid var(--shadow-dark);
+    border-right: 2px solid var(--shadow-light);
+    border-bottom: 2px solid var(--shadow-light);
+    padding: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+    background-color: #c0c0c0;
+}
+
+.counter-box {
+    background-color: black;
+    color: red;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 2px;
+    width: 40px;
+    text-align: center;
+    border-top: 1px solid var(--shadow-dark);
+    border-left: 1px solid var(--shadow-dark);
+    border-right: 1px solid var(--shadow-light);
+    border-bottom: 1px solid var(--shadow-light);
+}
+
+.face-btn {
+    width: 26px;
+    height: 26px;
+    font-size: 18px;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-color);
+    border-top: 2px solid var(--shadow-light);
+    border-left: 2px solid var(--shadow-light);
+    border-right: 2px solid var(--shadow-dark);
+    border-bottom: 2px solid var(--shadow-dark);
+    cursor: pointer;
+}
+
+.face-btn:active {
+    border-top: 2px solid var(--shadow-dark);
+    border-left: 2px solid var(--shadow-dark);
+    border-right: 2px solid var(--shadow-light);
+    border-bottom: 2px solid var(--shadow-light);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(9, 20px);
+    grid-template-rows: repeat(9, 20px);
+    border-top: 3px solid var(--shadow-dark);
+    border-left: 3px solid var(--shadow-dark);
+    border-right: 3px solid var(--shadow-light);
+    border-bottom: 3px solid var(--shadow-light);
+}
+
+.cell {
+    width: 20px;
+    height: 20px;
+    background-color: var(--bg-color);
+    border-top: 2px solid var(--shadow-light);
+    border-left: 2px solid var(--shadow-light);
+    border-right: 2px solid var(--shadow-dark);
+    border-bottom: 2px solid var(--shadow-dark);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: default;
+    box-sizing: border-box;
+}
+
+.cell.revealed {
+    border: 1px solid #808080;
+    background-color: #c0c0c0;
+}
+
+.cell.mine {
+    background-color: red;
+}
+
+.cell.flagged {
+    color: red;
+}
+
+/* Number colors */
+.cell[data-num="1"] {
+    color: blue;
+}
+
+.cell[data-num="2"] {
+    color: green;
+}
+
+.cell[data-num="3"] {
+    color: red;
+}
+
+.cell[data-num="4"] {
+    color: darkblue;
+}
+
+.cell[data-num="5"] {
+    color: darkred;
+}
+
+.cell[data-num="6"] {
+    color: teal;
+}
+
+.cell[data-num="7"] {
+    color: black;
+}
+
+.cell[data-num="8"] {
+    color: gray;
+}
